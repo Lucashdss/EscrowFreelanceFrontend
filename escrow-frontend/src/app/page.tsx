@@ -29,11 +29,14 @@ export default function Home() {
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 pt-10 text-center md:px-10 md:pt-16">
-        <div className="mb-8 inline-flex items-center overflow-hidden rounded-full border border-white/80 text-sm font-semibold">
+        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/80 p-1 text-sm font-semibold">
           <button
             type="button"
             onClick={() => setIsFreelancerView(false)}
-            className={`px-5 py-2 transition ${isFreelancerView ? "text-white/90 hover:bg-white/10" : "bg-white text-[#2f3136]"
+            className={`w-36 rounded-full px-5 py-2 text-center transition duration-300 ${
+              isFreelancerView
+                ? "text-white/90 hover:bg-white/10"
+                : "scale-125 bg-white text-[#2f3136]"
               }`}
           >
             Clients
@@ -41,7 +44,10 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setIsFreelancerView(true)}
-            className={`px-5 py-2 transition ${isFreelancerView ? "bg-white text-green-700" : "text-white/90 hover:bg-white/10"
+            className={`w-36 rounded-full px-5 py-2 text-center transition duration-300 ${
+              isFreelancerView
+                ? "scale-125 bg-white text-green-700"
+                : "text-white/90 hover:bg-white/10"
               }`}
           >
             Freelancers
