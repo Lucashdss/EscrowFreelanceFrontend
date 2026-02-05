@@ -1,6 +1,16 @@
+"use client";
+
+import { useState } from "react";
+
 export default function Home() {
+  const [isFreelancerView, setIsFreelancerView] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[#2f3136] text-white">
+    <div
+      className={`min-h-screen text-white ${
+        isFreelancerView ? "bg-green-700" : "bg-[#2f3136]"
+      }`}
+    >
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5 md:px-10">
         <p className="text-xl font-bold tracking-tight">EscrowFreelance</p>
         <div className="flex items-center gap-3">
@@ -21,12 +31,30 @@ export default function Home() {
 
       <main className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 pt-10 text-center md:px-10 md:pt-16">
         <div className="mb-8 inline-flex items-center overflow-hidden rounded-full border border-white/80 text-sm font-semibold">
-          <span className="bg-white px-5 py-2 text-[#2f3136]">Clients</span>
-          <span className="px-5 py-2">Freelancers</span>
+          <button
+            type="button"
+            onClick={() => setIsFreelancerView(false)}
+            className={`px-5 py-2 transition ${
+              isFreelancerView ? "text-white/90 hover:bg-white/10" : "bg-white text-[#2f3136]"
+            }`}
+          >
+            Clients
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsFreelancerView(true)}
+            className={`px-5 py-2 transition ${
+              isFreelancerView ? "bg-white text-green-700" : "text-white/90 hover:bg-white/10"
+            }`}
+          >
+            Freelancers
+          </button>
         </div>
 
         <h1 className="max-w-4xl text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
-          Pay the way your project needs.
+          {isFreelancerView
+            ? "be sure that you money is waiting for you"
+            : "Pay the way your project needs."}
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-white/80 md:text-xl">
           Secure escrow payments for freelance work. Fund milestones, approve
