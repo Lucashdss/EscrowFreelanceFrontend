@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [isFreelancerView, setIsFreelancerView] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   return (
     <div
@@ -13,12 +14,13 @@ export default function Home() {
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5 md:px-10">
         <p className="text-xl font-bold tracking-tight">EscrowFreelance</p>
         <div className="flex items-center gap-3">
-          <a
-            href="/account/login"
+          <button
+            type="button"
+            onClick={() => setIsLoginModalOpen(true)}
             className="rounded-full border border-white/70 px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-[#2f3136]"
           >
             Log in
-          </a>
+          </button>
           <a
             href="/account/register"
             className="rounded-full bg-white px-6 py-2 text-sm font-semibold text-[#2f3136] transition hover:bg-white/90"
@@ -82,6 +84,69 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {isLoginModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="w-full max-w-xl rounded-2xl border border-white/15 bg-[#1f2c3d] p-6 shadow-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-3xl font-bold">Welcome to EscrowFreelance</h2>
+              <button
+                type="button"
+                onClick={() => setIsLoginModalOpen(false)}
+                className="rounded-full border border-white/20 px-3 py-1 text-sm text-white/70 hover:bg-white/10 hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="w-full rounded-xl bg-[#2f95f3] px-4 py-3 text-base font-semibold text-white transition hover:bg-[#2587df]"
+            >
+              Continue with Google
+            </button>
+
+            <div className="my-4 flex items-center gap-3 text-sm text-white/70">
+              <div className="h-px flex-1 bg-white/20" />
+              <span>OR</span>
+              <div className="h-px flex-1 bg-white/20" />
+            </div>
+
+            <div className="mb-4 flex items-center gap-3">
+              <input
+                type="email"
+                placeholder="Email address"
+                className="h-12 flex-1 rounded-xl border border-white/20 bg-[#162334] px-4 text-white placeholder:text-white/50 focus:border-white/40 focus:outline-none"
+              />
+              <button
+                type="button"
+                className="h-12 rounded-xl bg-[#2f95f3] px-5 font-semibold transition hover:bg-[#2587df]"
+              >
+                Continue
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                "MetaMask",
+                "Coinbase",
+                "Phantom",
+                "WalletConnect",
+              ].map((wallet) => (
+                <button
+                  key={wallet}
+                  type="button"
+                  className="rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
+                >
+                  {wallet}
+                </button>
+              ))}
+            </div>
+
+            <p className="mt-5 text-center text-sm text-white/60">Terms · Privacy</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
