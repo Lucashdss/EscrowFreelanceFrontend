@@ -2,19 +2,22 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 export default function Home() {
   const [isFreelancerView, setIsFreelancerView] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { connect, connectors, status, error } = useConnect();
+  const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
   const trimmedAddress = address
     ? `${address.slice(0, 4)}...${address.slice(-4)}`
     : "Connect Wallet";
   const headerLabel = isMounted ? trimmedAddress : "Connect Wallet";
-  const isModalOpen = isMounted && isLoginModalOpen && !isConnected;
+  const isConnectModalOpen = isMounted && isLoginModalOpen && !isConnected;
+  const isDisconnectOpen = isMounted && isDisconnectModalOpen && isConnected;
   const wallets = [
     { name: "MetaMask", icon: "/wallets/metamaskIcon.svg", id: "injected" },
     {
@@ -48,9 +51,12 @@ export default function Home() {
           <button
             type="button"
             onClick={() => {
-              if (isMounted && !isConnected) {
-                setIsLoginModalOpen(true);
+              if (!isMounted) return;
+              if (isConnected) {
+                setIsDisconnectModalOpen(true);
+                return;
               }
+              setIsLoginModalOpen(true);
             }}
             disabled={!isMounted}
             className="rounded-full border border-white/70 px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-[#2f3136] disabled:cursor-not-allowed disabled:opacity-70"
@@ -132,7 +138,7 @@ export default function Home() {
         </section>
       </main>
 
-      {isModalOpen ? (
+      {isConnectModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="w-full max-w-xl rounded-2xl border border-white/15 bg-[#1f2c3d] p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
@@ -217,6 +223,38 @@ export default function Home() {
             ) : null}
 
             <p className="mt-5 text-center text-sm text-white/60">Terms · Privacy</p>
+          </div>
+        </div>
+      ) : null}
+
+      {isDisconnectOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#2a2a2a] p-6 text-center text-white shadow-2xl">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Connected</h2>
+              <button
+                type="button"
+                onClick={() => setIsDisconnectModalOpen(false)}
+                className="rounded-full border border-white/20 px-3 py-1 text-sm text-white/70 hover:bg-white/10 hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+            <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-b from-emerald-300 to-cyan-400 text-2xl font-bold text-black">
+              {address ? address.slice(2, 4).toUpperCase() : "W"}
+            </div>
+            <p className="text-lg font-semibold">{trimmedAddress}</p>
+            <p className="mt-2 text-sm text-white/50">0.00 ETH</p>
+            <button
+              type="button"
+              onClick={() => {
+                disconnect();
+                setIsDisconnectModalOpen(false);
+              }}
+              className="mt-6 w-full rounded-full bg-[#3a3a3a] px-4 py-3 text-base font-semibold text-white/90 transition hover:bg-[#444]"
+            >
+              Disconnect
+            </button>
           </div>
         </div>
       ) : null}
