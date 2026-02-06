@@ -9,6 +9,10 @@ export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { connect, connectors, status, error } = useConnect();
   const { address, isConnected } = useAccount();
+  const trimmedAddress = address
+    ? `${address.slice(0, 4)}...${address.slice(-4)}`
+    : "Connect Wallet";
+  const isModalOpen = isLoginModalOpen && !isConnected;
   const wallets = [
     { name: "MetaMask", icon: "/wallets/metamaskIcon.svg", id: "injected" },
     {
@@ -36,10 +40,14 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setIsLoginModalOpen(true)}
+            onClick={() => {
+              if (!isConnected) {
+                setIsLoginModalOpen(true);
+              }
+            }}
             className="rounded-full border border-white/70 px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-[#2f3136]"
           >
-            Connect Wallet
+            {trimmedAddress}
           </button>
         </div>
       </header>
@@ -97,7 +105,7 @@ export default function Home() {
         </section>
       </main>
 
-      {isLoginModalOpen ? (
+      {isModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="w-full max-w-xl rounded-2xl border border-white/15 bg-[#1f2c3d] p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
