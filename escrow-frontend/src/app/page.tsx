@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
@@ -195,8 +196,7 @@ export default function Home() {
                     onClick={() => connect({ connector })}
                     className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element -- svg icons should render without next/image */}
-                    <img src={icon} alt={name} className="h-5 w-5" />
+                    <Image src={icon} alt={name} width={20} height={20} />
                   </button>
                 );
               })}
@@ -207,8 +207,7 @@ export default function Home() {
                   aria-label={name}
                   className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element -- svg icons should render without next/image */}
-                  <img src={icon} alt={name} className="h-5 w-5" />
+                  <Image src={icon} alt={name} width={20} height={20} />
                 </button>
               ))}
             </div>
