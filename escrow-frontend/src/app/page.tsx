@@ -111,7 +111,7 @@ export default function Home() {
 
         <h1 className="max-w-4xl text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
           {isFreelancerView
-            ? "be sure that you money is waiting for you"
+            ? "Be sure that your money is waiting for you."
             : "Pay the way your project needs."}
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-white/80 md:text-xl">
