@@ -1,10 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
   const [isFreelancerView, setIsFreelancerView] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const wallets = [
+    { name: "MetaMask", icon: "/wallets/metamaskIcon.svg" },
+    { name: "Coinbase", icon: "/wallets/coinbaseIcon.svg" },
+    { name: "Phantom", icon: "/wallets/phantomIcon.svg" },
+    { name: "WalletConnect", icon: "/wallets/walletConnectIcon.svg" },
+  ];
 
   return (
     <div
@@ -125,18 +132,14 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                "MetaMask",
-                "Coinbase",
-                "Phantom",
-                "WalletConnect",
-              ].map((wallet) => (
+              {wallets.map(({ name, icon }) => (
                 <button
-                  key={wallet}
+                  key={name}
                   type="button"
-                  className="rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
+                  aria-label={name}
+                  className="flex items-center justify-center rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
                 >
-                  {wallet}
+                  <Image src={icon} alt={name} width={20} height={20} />
                 </button>
               ))}
             </div>
