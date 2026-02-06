@@ -39,14 +39,8 @@ export default function Home() {
             onClick={() => setIsLoginModalOpen(true)}
             className="rounded-full border border-white/70 px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-[#2f3136]"
           >
-            Log in
+            Connect Wallet
           </button>
-          <a
-            href="/account/register"
-            className="rounded-full bg-white px-6 py-2 text-sm font-semibold text-[#2f3136] transition hover:bg-white/90"
-          >
-            Sign up
-          </a>
         </div>
       </header>
 
