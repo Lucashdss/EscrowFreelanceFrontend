@@ -14,7 +14,7 @@ export default function Home() {
     {
       name: "Coinbase",
       icon: "/wallets/coinbaseIcon.svg",
-      id: "coinbaseWallet",
+      id: "coinbaseWalletSDK",
     },
     {
       name: "WalletConnect",
@@ -157,7 +157,7 @@ export default function Home() {
                     key={name}
                     type="button"
                     aria-label={name}
-                    disabled={!connector.ready || status === "pending"}
+                    disabled={status === "pending"}
                     onClick={() => connect({ connector })}
                     className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43] disabled:cursor-not-allowed disabled:opacity-50"
                   >
