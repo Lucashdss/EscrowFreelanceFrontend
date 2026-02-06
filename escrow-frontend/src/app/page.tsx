@@ -2,15 +2,25 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useAccount, useConnect } from "wagmi";
 
 export default function Home() {
   const [isFreelancerView, setIsFreelancerView] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { connect, connectors, status, error } = useConnect();
+  const { address, isConnected } = useAccount();
   const wallets = [
-    { name: "MetaMask", icon: "/wallets/metamaskIcon.svg" },
-    { name: "Coinbase", icon: "/wallets/coinbaseIcon.svg" },
-    { name: "Phantom", icon: "/wallets/phantomIcon.svg" },
-    { name: "WalletConnect", icon: "/wallets/walletConnectIcon.svg" },
+    { name: "MetaMask", icon: "/wallets/metamaskIcon.svg", id: "injected" },
+    {
+      name: "Coinbase",
+      icon: "/wallets/coinbaseIcon.svg",
+      id: "coinbaseWallet",
+    },
+    {
+      name: "WalletConnect",
+      icon: "/wallets/walletConnectIcon.svg",
+      id: "walletConnect",
+    },
   ];
 
   return (
@@ -131,18 +141,39 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {wallets.map(({ name, icon }) => (
-                <button
-                  key={name}
-                  type="button"
-                  aria-label={name}
-                  className="flex items-center justify-center rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
-                >
-                  <Image src={icon} alt={name} width={20} height={20} />
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {wallets.map(({ name, icon, id }) => {
+                const connector = connectors.find((item) => item.id === id);
+
+                if (!connector) {
+                  return null;
+                }
+
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    aria-label={name}
+                    disabled={!connector.ready || status === "pending"}
+                    onClick={() => connect({ connector })}
+                    className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Image src={icon} alt={name} width={20} height={20} />
+                    <span>{name}</span>
+                  </button>
+                );
+              })}
             </div>
+
+            {error ? (
+              <p className="mt-3 text-sm text-red-400">{error.message}</p>
+            ) : null}
+
+            {isConnected ? (
+              <p className="mt-3 text-sm text-green-400">
+                Connected: {address}
+              </p>
+            ) : null}
 
             <p className="mt-5 text-center text-sm text-white/60">Terms · Privacy</p>
           </div>
