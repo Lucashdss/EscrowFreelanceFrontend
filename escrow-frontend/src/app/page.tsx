@@ -1,18 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useConnect } from "wagmi";
 
 export default function Home() {
   const [isFreelancerView, setIsFreelancerView] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { connect, connectors, status, error } = useConnect();
   const { address, isConnected } = useAccount();
   const trimmedAddress = address
     ? `${address.slice(0, 4)}...${address.slice(-4)}`
     : "Connect Wallet";
-  const isModalOpen = isLoginModalOpen && !isConnected;
+  const headerLabel = isMounted ? trimmedAddress : "Connect Wallet";
+  const isModalOpen = isMounted && isLoginModalOpen && !isConnected;
   const wallets = [
     { name: "MetaMask", icon: "/wallets/metamaskIcon.svg", id: "injected" },
     {
@@ -30,6 +32,11 @@ export default function Home() {
     { name: "Phantom", icon: "/wallets/phantomIcon.svg" },
   ];
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount flag for hydration-safe UI
+    setIsMounted(true);
+  }, []);
+
   return (
     <div
       className={`min-h-screen text-white ${isFreelancerView ? "bg-green-700" : "bg-[#2f3136]"
@@ -41,40 +48,60 @@ export default function Home() {
           <button
             type="button"
             onClick={() => {
-              if (!isConnected) {
+              if (isMounted && !isConnected) {
                 setIsLoginModalOpen(true);
               }
             }}
-            className="rounded-full border border-white/70 px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-[#2f3136]"
+            disabled={!isMounted}
+            className="rounded-full border border-white/70 px-6 py-2 text-sm font-semibold transition hover:bg-white hover:text-[#2f3136] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {trimmedAddress}
+            {headerLabel}
           </button>
         </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-20 pt-10 text-center md:px-10 md:pt-16">
-        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/80 p-1 text-sm font-semibold">
-          <button
-            type="button"
-            onClick={() => setIsFreelancerView(false)}
-            className={`w-36 rounded-full px-5 py-2 text-center transition duration-300 ${isFreelancerView
-              ? "text-white/90 hover:bg-white/10"
-              : "scale-125 bg-white text-[#2f3136]"
-              }`}
-          >
-            Clients
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsFreelancerView(true)}
-            className={`w-36 rounded-full px-5 py-2 text-center transition duration-300 ${isFreelancerView
-              ? "scale-125 bg-white text-green-700"
-              : "text-white/90 hover:bg-white/10"
-              }`}
-          >
-            Freelancers
-          </button>
-        </div>
+        {isMounted ? (
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/80 p-1 text-sm font-semibold">
+            <button
+              type="button"
+              onClick={() => setIsFreelancerView(false)}
+              className={`w-36 rounded-full px-5 py-2 text-center transition duration-300 ${isFreelancerView
+                ? "text-white/90 hover:bg-white/10"
+                : "scale-125 bg-white text-[#2f3136]"
+                }`}
+            >
+              Clients
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsFreelancerView(true)}
+              className={`w-36 rounded-full px-5 py-2 text-center transition duration-300 ${isFreelancerView
+                ? "scale-125 bg-white text-green-700"
+                : "text-white/90 hover:bg-white/10"
+                }`}
+            >
+              Freelancers
+            </button>
+          </div>
+        ) : (
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/80 p-1 text-sm font-semibold">
+            <button
+              type="button"
+              disabled
+              className="w-36 rounded-full bg-white px-5 py-2 text-center text-[#2f3136] opacity-90"
+            >
+              Clients
+            </button>
+            <button
+              type="button"
+              disabled
+              className="w-36 rounded-full px-5 py-2 text-center text-white/70 opacity-80"
+            >
+              Freelancers
+            </button>
+          </div>
+        )}
 
         <h1 className="max-w-4xl text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
           {isFreelancerView
