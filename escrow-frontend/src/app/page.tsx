@@ -22,6 +22,9 @@ export default function Home() {
       id: "walletConnect",
     },
   ];
+  const otherWallets = [
+    { name: "Phantom", icon: "/wallets/phantomIcon.svg" },
+  ];
 
   return (
     <div
@@ -141,7 +144,7 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {wallets.map(({ name, icon, id }) => {
                 const connector = connectors.find((item) => item.id === id);
 
@@ -159,10 +162,19 @@ export default function Home() {
                     className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Image src={icon} alt={name} width={20} height={20} />
-                    <span>{name}</span>
                   </button>
                 );
               })}
+              {otherWallets.map(({ name, icon }) => (
+                <button
+                  key={name}
+                  type="button"
+                  aria-label={name}
+                  className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
+                >
+                  <Image src={icon} alt={name} width={20} height={20} />
+                </button>
+              ))}
             </div>
 
             {error ? (
