@@ -9,7 +9,8 @@ export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const { connect, connectors, status, error } = useConnect();
+  const [connectError, setConnectError] = useState<string | null>(null);
+  const { connect, connectors, status, reset } = useConnect();
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
   const trimmedAddress = address
@@ -18,6 +19,7 @@ export default function Home() {
   const headerLabel = isMounted ? trimmedAddress : "Connect Wallet";
   const isConnectModalOpen = isMounted && isLoginModalOpen && !isConnected;
   const isDisconnectOpen = isMounted && isDisconnectModalOpen && isConnected;
+  const isConnecting = status === "pending" && !connectError;
   const wallets = [
     { name: "MetaMask", icon: "/wallets/metamaskIcon.svg", id: "injected" },
     {
@@ -39,6 +41,25 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- mount flag for hydration-safe UI
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isLoginModalOpen) return;
+    setConnectError(null);
+  }, [isLoginModalOpen]);
+
+  const handleConnect = (connector: (typeof connectors)[number]) => {
+    setConnectError(null);
+    reset();
+    connect(
+      { connector },
+      {
+        onError: () => {
+          setConnectError("Something went wrong. Try again.");
+          reset();
+        },
+      }
+    );
+  };
 
   return (
     <div
@@ -152,33 +173,6 @@ export default function Home() {
               </button>
             </div>
 
-            <button
-              type="button"
-              className="w-full rounded-xl bg-[#2f95f3] px-4 py-3 text-base font-semibold text-white transition hover:bg-[#2587df]"
-            >
-              Continue with Google
-            </button>
-
-            <div className="my-4 flex items-center gap-3 text-sm text-white/70">
-              <div className="h-px flex-1 bg-white/20" />
-              <span>OR</span>
-              <div className="h-px flex-1 bg-white/20" />
-            </div>
-
-            <div className="mb-4 flex items-center gap-3">
-              <input
-                type="email"
-                placeholder="Email address"
-                className="h-12 flex-1 rounded-xl border border-white/20 bg-[#162334] px-4 text-white placeholder:text-white/50 focus:border-white/40 focus:outline-none"
-              />
-              <button
-                type="button"
-                className="h-12 rounded-xl bg-[#2f95f3] px-5 font-semibold transition hover:bg-[#2587df]"
-              >
-                Continue
-              </button>
-            </div>
-
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {wallets.map(({ name, icon, id }) => {
                 const connector = connectors.find((item) => item.id === id);
@@ -192,11 +186,19 @@ export default function Home() {
                     key={name}
                     type="button"
                     aria-label={name}
-                    disabled={status === "pending"}
-                    onClick={() => connect({ connector })}
+                    disabled={isConnecting}
+                    onClick={() => handleConnect(connector)}
                     className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <Image src={icon} alt={name} width={20} height={20} />
+                    <Image
+                      src={icon}
+                      alt={name}
+                      width={50}
+                      height={50}
+                      priority
+                      loading="eager"
+                      unoptimized
+                    />
                   </button>
                 );
               })}
@@ -207,13 +209,21 @@ export default function Home() {
                   aria-label={name}
                   className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-[#162334] px-3 py-4 text-sm font-semibold text-white/90 transition hover:bg-[#1b2d43]"
                 >
-                  <Image src={icon} alt={name} width={20} height={20} />
+                  <Image
+                    src={icon}
+                    alt={name}
+                    width={50}
+                    height={50}
+                    priority
+                    loading="eager"
+                    unoptimized
+                  />
                 </button>
               ))}
             </div>
 
-            {error ? (
-              <p className="mt-3 text-sm text-red-400">{error.message}</p>
+            {connectError ? (
+              <p className="mt-3 text-sm text-red-400">{connectError}</p>
             ) : null}
 
             {isConnected ? (
