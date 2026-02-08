@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useConnectors } from "wagmi";
 
 export default function Home() {
   const [isFreelancerView, setIsFreelancerView] = useState(false);
@@ -10,16 +10,17 @@ export default function Home() {
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
-  const { connect, connectors, status, reset } = useConnect();
+  const connectors = useConnectors();
+  const { mutate, status, reset, mutateAsync } = useConnect();
   const { disconnect } = useDisconnect();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isConnecting: accountIsConnecting } = useAccount();
   const trimmedAddress = address
     ? `${address.slice(0, 4)}...${address.slice(-4)}`
     : "Connect Wallet";
   const headerLabel = isMounted ? trimmedAddress : "Connect Wallet";
   const isConnectModalOpen = isMounted && isLoginModalOpen && !isConnected;
   const isDisconnectOpen = isMounted && isDisconnectModalOpen && isConnected;
-  const isConnecting = status === "pending" && !connectError;
+  const isConnecting = accountIsConnecting && !connectError;
   const wallets = [
     { name: "MetaMask", icon: "/wallets/metamaskIcon.svg", id: "injected" },
     {
@@ -47,18 +48,23 @@ export default function Home() {
     setConnectError(null);
   }, [isLoginModalOpen]);
 
-  const handleConnect = (connector: (typeof connectors)[number]) => {
+  const handleConnect = async (connector: (typeof connectors)[number]) => {
     setConnectError(null);
-    reset();
-    connect(
-      { connector },
-      {
-        onError: () => {
-          setConnectError("Something went wrong. Try again.");
-          reset();
-        },
+
+    try {
+      // Ensure previous connection attempts are wiped
+      reset();
+      await mutateAsync({ connector });
+
+    } catch (err: any) {
+      if (err.code === 4001) {
+        setConnectError("Connection cancelled.");
+      } else {
+        setConnectError("Failed to connect. Please try again.");
       }
-    );
+    } finally {
+      reset();
+    }
   };
 
   return (
